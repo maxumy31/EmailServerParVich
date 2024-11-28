@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import urllib.parse
 import endpoints
+import database
 
 HOST = '127.0.0.1'
 PORT = 12345
@@ -35,8 +36,13 @@ class Server(BaseHTTPRequestHandler):
         self.endpoints[endpoint][method](self)
 
 
+database.registerDB()
 
 Server.add_endpoint("/echo",METHOD_GET,endpoints.echo)
+Server.add_endpoint("/email",METHOD_GET,endpoints.create_email)
+Server.add_endpoint("/email_exists",METHOD_GET,endpoints.check_email_exists)
+Server.add_endpoint("/email_send",METHOD_GET,endpoints.send_mail)
+Server.add_endpoint("/email_recieve",METHOD_GET,endpoints.read_mail)
 
 httpd = HTTPServer((HOST, PORT), Server)
 print(f"Сервер запущен на {HOST}:{PORT}")

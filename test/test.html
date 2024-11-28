@@ -5,10 +5,43 @@
 </head>
 <body>
     <div>
+        <p>Возвращает посланное сообщение на сервер</p>
         <p><input type = "text" class = "echo_message"/></p>
         <button onclick="processEchoRequest()">Отослать эхо запрос</button>
-        <p>Эндпоинт - /echo</p>
-        <p>Возвращает посланное сообщение на сервер</p>
+    </div>
+
+    <hr>
+
+    <div>
+        <p>Создает новую почту</p>
+        <p><input type = "text" class = "register_email"/></p>
+        <button onclick="processEmailRegistration()">Зарегистрировать новый email</button>
+    </div>
+
+    <hr>
+
+    <div>
+        <p>Проверяет что существует email на сервере</p>
+        <p><input type = "text" class = "check_email_exists"/></p>
+        <button onclick="processEmailExists()">Проверить существование email</button>
+    </div>
+
+    <hr>
+
+    <div>
+        <p>Проверяет что существует email на сервере</p>
+        <p><input type = "text" class = "mail_author" placeholder="Автор"/></p>
+        <p><input type = "text" class = "mail_target" placeholder="Получатель"/></p>
+        <p><input type = "text" class = "mail_theme" placeholder="Тема"/></p>
+        <p><input type = "text" class = "mail_content" placeholder="Содержимое"/></p>
+        <button onclick="processMailSend()">Отправить письмо</button>
+    </div>
+
+
+    <div>
+        <p>Возвращает все письма для данного email</p>
+        <p><input type = "text" class = "mail_reciever" placeholder="Получатель"/></p>
+        <button onclick="processMailRecieve()">Получить письма</button>
     </div>
 
 </body>
