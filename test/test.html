@@ -4,17 +4,26 @@
 
 </head>
 <body>
+
+
+    <hr>
+
     <div>
         <p>Возвращает посланное сообщение на сервер</p>
         <p><input type = "text" class = "echo_message"/></p>
         <button onclick="processEchoRequest()">Отослать эхо запрос</button>
+
+        <p>Нужно ли отправлять несколько запросов, сколько запросов отправлять</p>
+        <input type="checkbox" class="echo_multirequest_enabled"/>
+        <input type="number" class="echo_multirequest_count"/>
     </div>
 
     <hr>
 
     <div>
         <p>Создает новую почту</p>
-        <p><input type = "text" class = "register_email"/></p>
+        <p><input type = "text" class = "register_email_login" placeholder="Email"/></p>
+        <p><input type = "text" class = "register_email_password" placeholder="Пароль"/></p>
         <button onclick="processEmailRegistration()">Зарегистрировать новый email</button>
     </div>
 
@@ -22,15 +31,16 @@
 
     <div>
         <p>Проверяет что существует email на сервере</p>
-        <p><input type = "text" class = "check_email_exists"/></p>
+        <p><input type = "text" class = "check_email_exists" placeholder="Email"/></p>
         <button onclick="processEmailExists()">Проверить существование email</button>
     </div>
 
     <hr>
 
     <div>
-        <p>Проверяет что существует email на сервере</p>
+        <p>Отправка письма</p>
         <p><input type = "text" class = "mail_author" placeholder="Автор"/></p>
+        <p><input type = "text" class = "mail_author_password" placeholder="Пароль автора письма"/></p>
         <p><input type = "text" class = "mail_target" placeholder="Получатель"/></p>
         <p><input type = "text" class = "mail_theme" placeholder="Тема"/></p>
         <p><input type = "text" class = "mail_content" placeholder="Содержимое"/></p>
@@ -41,6 +51,7 @@
     <div>
         <p>Возвращает все письма для данного email</p>
         <p><input type = "text" class = "mail_reciever" placeholder="Получатель"/></p>
+        <p><input type = "text" class = "mail_reciever_password" placeholder="Пароль получателя"/></p>
         <button onclick="processMailRecieve()">Получить письма</button>
     </div>
 

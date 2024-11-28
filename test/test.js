@@ -1,46 +1,50 @@
 const URL = "http://127.0.0.1:12345"
 
 
+
 function processEchoRequest()
 {
     //Эхо запрос
+
+    const IsMulti = $(".echo_multirequest_enabled").prop("checked");
+    const MultiCount = Number($(".echo_multirequest_count").val());
+
+    const requests_count = IsMulti ? MultiCount : 1
+
     const endpoint = "/echo"
     const getArgs = $(".echo_message").val()
     
     if(getArgs === undefined || getArgs === "")
     {
-        processGetRequest(endpoint,{})
+        processGetRequest(endpoint,{},requests_count)
     }
     else
     {
-        processGetRequest(endpoint,{"echo" : getArgs})
+        processGetRequest(endpoint,{"echo" : getArgs},requests_count)
     }
 }
 
 function processEmailRegistration()
 {
     const endpoint = "/email"
-    const getArgs = $(".register_email").val()
+    const email = $(".register_email_login").val()
+    const pass = $(".register_email_password").val()
 
-    if(getArgs === undefined || getArgs === "")
-        {
-            processGetRequest(endpoint,{})
-        }
-        else
-        {
-            processGetRequest(endpoint,{"email" : getArgs})
-        }
+    {
+        processGetRequest(endpoint,{"email" : email,"password":pass})
+    }
 }
 
 function processMailSend()
 {
     const endpoint = "/email_send"
     const author = $(".mail_author").val()
+    const password = $(".mail_author_password").val()
     const target = $(".mail_target").val()
     const content = $(".mail_content").val()
     const theme = $(".mail_theme").val()
 
-    processGetRequest(endpoint,{"author" : author,"target":target,"content":content,"theme":theme})
+    processGetRequest(endpoint,{"author" : author,"target":target,"content":content,"theme":theme,"password":password})
 
 }
 
@@ -49,8 +53,10 @@ function processMailRecieve()
     const endpoint = "/email_recieve"
 
     const reciever = $(".mail_reciever").val()
+    const password = $(".mail_reciever_password").val()
 
-    processGetRequest(endpoint,{"reciever":reciever})
+
+    processGetRequest(endpoint,{"reciever":reciever,"password":password})
 }
 
 function processEmailExists()
@@ -59,13 +65,8 @@ function processEmailExists()
     const getArgs = $(".check_email_exists").val()
 
     if(getArgs === undefined || getArgs === "")
-        {
-            processGetRequest(endpoint,{})
-        }
-        else
-        {
-            processGetRequest(endpoint,{"email" : getArgs})
-        }
+
+    processGetRequest(endpoint,{"email" : getArgs})
 }
 
 function processPostRequest(endpoint,postArgs)
@@ -85,11 +86,16 @@ function processPostRequest(endpoint,postArgs)
         .catch((error) => alert('Ошибка: '+ error));
 }
 
-function processGetRequest(endpoint,getArgs)
+function processGetRequest(endpoint,getArgs,times = 1)
 {
-    const finalEndpoint = URL + endpoint + dictToGetRequest(getArgs)
-    alert("GET" + " запрос на " + finalEndpoint)
-    fetch(finalEndpoint,
+    const finalEndpoint = URL + endpoint + dictToGetRequest(getArgs);
+
+    console.log(times)
+
+    for(let i = 0; i < times;i++)
+    {
+        console.log("Request sent")
+        fetch(finalEndpoint,
         {
         method: "GET",
         headers: {
@@ -97,8 +103,9 @@ function processGetRequest(endpoint,getArgs)
         }, 
         })
         .then((response) => response.text())
-        .then((data) => alert('Ответ от сервера: ' + data))
-        .catch((error) => alert('Ошибка: '+ error));
+        .then((data) => console.log('Ответ от сервера: ' + data))
+        .catch((error) => console.log('Ошибка: '+ error))
+    };
 }
 
 function dictToGetRequest(dict)
@@ -111,5 +118,5 @@ function dictToGetRequest(dict)
     reduce((v1,v2) =>
         v1 + "&" + v2
     )
-    return "?" + test
+    return "?" + test + `&cacheBuster=${Date.now()}_${Math.random()}`
 }

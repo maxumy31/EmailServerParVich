@@ -1,4 +1,5 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from socketserver import ThreadingMixIn
 import urllib.parse
 import endpoints
 import database
@@ -8,6 +9,9 @@ PORT = 12345
 
 METHOD_POST = 0
 METHOD_GET = 1
+
+class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
+    pass
 
 
 class Server(BaseHTTPRequestHandler):
@@ -36,16 +40,20 @@ class Server(BaseHTTPRequestHandler):
         self.endpoints[endpoint][method](self)
 
 
-database.registerDB()
 
-Server.add_endpoint("/echo",METHOD_GET,endpoints.echo)
-Server.add_endpoint("/email",METHOD_GET,endpoints.create_email)
-Server.add_endpoint("/email_exists",METHOD_GET,endpoints.check_email_exists)
-Server.add_endpoint("/email_send",METHOD_GET,endpoints.send_mail)
-Server.add_endpoint("/email_recieve",METHOD_GET,endpoints.read_mail)
+def main():
+    database.registerDB()
 
-httpd = HTTPServer((HOST, PORT), Server)
-print(f"Сервер запущен на {HOST}:{PORT}")
-httpd.serve_forever()
+    Server.add_endpoint("/echo",METHOD_GET,endpoints.echo)
+    Server.add_endpoint("/email",METHOD_GET,endpoints.create_email)
+    Server.add_endpoint("/email_exists",METHOD_GET,endpoints.check_email_exists)
+    Server.add_endpoint("/email_send",METHOD_GET,endpoints.send_mail)
+    Server.add_endpoint("/email_recieve",METHOD_GET,endpoints.read_mail)
+    
+    httpd = ThreadingHTTPServer((HOST, PORT), Server)
+    print(f"Сервер запущен на {HOST}:{PORT}")
+
+    httpd.serve_forever()
 
 
+main()
