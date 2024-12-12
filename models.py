@@ -29,3 +29,11 @@ class Mail:
             "authorID":self.author_id,
             "sentToId":self.sent_to_id
         })
+    def toJson(self):
+        return {
+            "id":self.id,
+            "theme":self.theme,
+            "content":self.content,
+            "authorID":self.author_id,
+            "sentToId":self.sent_to_id
+        }

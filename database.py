@@ -1,38 +1,40 @@
 import sqlite3
 import threading
 
-DB_PATH = "data3.db"
+DB_PATH = "data4.db"
 EMAIL_DOMAIN = "test.ru"
 WRITING_MUTEX = threading.Lock()
 
 def connect():
-    return sqlite3.connect(DB_PATH)
+    connection = sqlite3.connect(DB_PATH, check_same_thread=False)
+    connection.execute("PRAGMA journal_mode=WAL;")
+    return connection
 
 
 
-def registerDB():
-    connection = connect()
-    cursor = connection.cursor()
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Mail(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    theme TEXT,
-    content TEXT,
-    author INTEGER,
-    sentTo INTEGER
-    )
-    ''')#Таблица с почтой
-    connection.commit()
+def register_db():
+    with connect() as connection:
+        cursor = connection.cursor()
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Mail(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        theme TEXT,
+        content TEXT,
+        author INTEGER,
+        sentTo INTEGER
+        )
+        ''')#Таблица с почтой
+        connection.commit()
 
 
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS Users(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE,
-    password TEXT
-    )
-    ''')#Таблица с пользователями
-    connection.commit()
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE,
+        password TEXT
+        )
+        ''')#Таблица с пользователями
+        connection.commit()
 
 
 
@@ -49,16 +51,16 @@ def create_email(email, hashedPassword):
         return (False,error)
     with WRITING_MUTEX:
         try:
-            connection = connect()
-            cursor = connection.cursor()
-            cursor.execute('''
-                INSERT INTO Users (email,password) 
-                VALUES (?,?)
-            ''', (email,hashedPassword))
-            connection.commit()
-            success = f"Пользователь {email} был успешно создан"
-            print(success)
-            return (True,success)
+            with connect() as connection:
+                cursor = connection.cursor()
+                cursor.execute('''
+                    INSERT INTO Users (email,password) 
+                    VALUES (?,?)
+                ''', (email,hashedPassword))
+                connection.commit()
+                success = f"Пользователь {email} был успешно создан"
+                print(success)
+                return (True,success)
         except sqlite3.Error as e:
             error = f"Ошибка при создании пользователя: {e}"
             print(error)
@@ -68,11 +70,13 @@ def create_email(email, hashedPassword):
 
 
 def check_email_exists(email):
-    cursor = connect().cursor()
-    cursor.execute('''
-    SELECT * FROM Users WHERE email = ?
-    ''', (email,))
-    user = cursor.fetchone()
+    user = None
+    with connect() as con:
+        cursor = con.cursor()
+        cursor.execute('''
+        SELECT * FROM Users WHERE email = ?
+        ''', (email,))
+        user = cursor.fetchone()
 
     if user:
         result = f"Почта {email} существует."
@@ -88,16 +92,16 @@ def check_email_exists(email):
 def send_mail(theme,content,author_id,sent_to_id):
     with WRITING_MUTEX:
         try:
-            connection = connect()
-            cursor = connection.cursor()
-            cursor.execute('''
-                INSERT INTO Mail (theme,content,author,sentTo) 
-                VALUES (?,?,?,?)
-            ''', (theme,content,author_id,sent_to_id))
-            connection.commit()
-            success = f"Письмо от {author_id} до {sent_to_id} было успешно добавлено"
-            print(success)
-            return (True,success)
+            with connect() as connection:
+                cursor = connection.cursor()
+                cursor.execute('''
+                    INSERT INTO Mail (theme,content,author,sentTo) 
+                    VALUES (?,?,?,?)
+                ''', (theme,content,author_id,sent_to_id))
+                connection.commit()
+                success = f"Письмо от {author_id} до {sent_to_id} было успешно добавлено"
+                print(success)
+                return (True,success)
         except sqlite3.Error as e:
             error = f"Ошибка при добавлении письма {e}"
             print(error)
@@ -113,12 +117,13 @@ def get_mail_for_email(email,password):
     if(user[1] == None or user[1][2] != password):
         return(False,"Пользователь не найден")
     userID = user[1][0]
-    print("ID = ",userID)
-    cursor = connect().cursor()
-    cursor.execute('''
-        SELECT * FROM Mail WHERE author = ?
-    ''', (userID,))
-    data = cursor.fetchall()
+    data = None
+    with connect() as connection:
+        cursor = connection.cursor()
+        cursor.execute('''
+            SELECT * FROM Mail WHERE author = ?
+        ''', (userID,))
+        data = cursor.fetchall()
     return(True,data)
 
 

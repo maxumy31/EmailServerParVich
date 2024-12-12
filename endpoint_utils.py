@@ -1,8 +1,11 @@
 import urllib.parse
 import hashlib
+import json
 
 def parse_post_data(server,content_length):
-    return server.rfile.read(content_length)
+    raw = (server.rfile.read(content_length).decode('utf-8'))
+    js = json.loads(raw)
+    return js
 
 def parse_get_data(server):
     return urllib.parse.parse_qs(urllib.parse.urlparse(server.path).query)

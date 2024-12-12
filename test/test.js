@@ -31,7 +31,7 @@ function processEmailRegistration()
     const pass = $(".register_email_password").val()
 
     {
-        processGetRequest(endpoint,{"email" : email,"password":pass})
+        processPostRequest(endpoint,JSON.stringify({"email" : email,"password":pass}))
     }
 }
 
@@ -44,7 +44,7 @@ function processMailSend()
     const content = $(".mail_content").val()
     const theme = $(".mail_theme").val()
 
-    processGetRequest(endpoint,{"author" : author,"target":target,"content":content,"theme":theme,"password":password})
+    processPostRequest(endpoint,JSON.stringify({"author" : author,"target":target,"content":content,"theme":theme,"password":password}))
 
 }
 
@@ -64,7 +64,8 @@ function processEmailExists()
     const endpoint = "/email_exists"
     const getArgs = $(".check_email_exists").val()
 
-    if(getArgs === undefined || getArgs === "")
+    
+    //if(getArgs === undefined || getArgs === "")
 
     processGetRequest(endpoint,{"email" : getArgs})
 }
@@ -77,9 +78,9 @@ function processPostRequest(endpoint,postArgs)
         {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json',  // Простые заголовки
+            'Content-Type': 'application/json', 
         },
-        body: postArgs,  // Отправляем json
+        body: postArgs,  
         })
         .then((response) => response.text())
         .then((data) => alert('Ответ от сервера: ' + data))
@@ -103,7 +104,8 @@ function processGetRequest(endpoint,getArgs,times = 1)
         }, 
         })
         .then((response) => response.text())
-        .then((data) => console.log('Ответ от сервера: ' + data))
+        .then((data) =>{ console.log('Ответ от сервера: ' + data)
+                console.log(JSON.parse(data))})
         .catch((error) => console.log('Ошибка: '+ error))
     };
 }
