@@ -56,7 +56,7 @@ function processMailRecieve()
     const password = $(".mail_reciever_password").val()
 
 
-    processGetRequest(endpoint,{"reciever":reciever,"password":password})
+    processPostRequest(endpoint,JSON.stringify({"reciever":reciever,"password":password}))
 }
 
 function processEmailExists()
@@ -83,15 +83,14 @@ function processPostRequest(endpoint,postArgs)
         body: postArgs,  
         })
         .then((response) => response.text())
-        .then((data) => alert('Ответ от сервера: ' + data))
-        .catch((error) => alert('Ошибка: '+ error));
+        .then((data) => {alert('Ответ от сервера: ' + data); console.log(JSON.parse(data));return})
+        .catch((error) => console.log('Ошибка: '+ error));
 }
 
 function processGetRequest(endpoint,getArgs,times = 1)
 {
     const finalEndpoint = URL + endpoint + dictToGetRequest(getArgs);
 
-    console.log(times)
 
     for(let i = 0; i < times;i++)
     {

@@ -121,7 +121,7 @@ def get_mail_for_email(email,password):
     with connect() as connection:
         cursor = connection.cursor()
         cursor.execute('''
-            SELECT * FROM Mail WHERE author = ?
+            SELECT * FROM Mail WHERE sentTo = ?
         ''', (userID,))
         data = cursor.fetchall()
     return(True,data)

@@ -64,7 +64,7 @@ def main():
 
     Server.add_endpoint("/echo",METHOD_GET,endpoints.echo)
     Server.add_endpoint("/email_exists",METHOD_GET,endpoints.check_email_exists)
-    Server.add_endpoint("/email_recieve",METHOD_GET,endpoints.read_mail)
+    Server.add_endpoint("/email_recieve",METHOD_POST,endpoints.read_mail)
     
     httpd = ThreadingHTTPServer((HOST, PORT), Server)
     print(f"Сервер запущен на {HOST}:{PORT}")

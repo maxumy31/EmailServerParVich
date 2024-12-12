@@ -98,12 +98,21 @@ def send_mail(self):
 def read_mail(self):
     RECIEVER_KEY = "reciever"
     content_length = eu.get_content_length(self)
-    query_params = eu.parse_get_data(self)
+    query_params = eu.parse_post_data(self,content_length)
 
-    password = eu.hash_password(query_params[PASSWORD_KEY][0])
+    password = query_params.get(PASSWORD_KEY)
+    if not password:
+        headers.response(self,200,"Указан неверный пароль".encode())
+        return
+    
+    password = eu.hash_password(password[0])
+    reciever = query_params.get(RECIEVER_KEY)
+    if not reciever:
+        headers.response(self,200,"Указан неверный пароль".encode())
+        return
 
     print(f"Получено сообщение: {query_params}")
-    result = db.get_mail_for_email(query_params[RECIEVER_KEY][0],password)
+    result = db.get_mail_for_email(reciever,password)
 
     if(result[0] == False):
         headers.response(self,500,"Пользователь не найден".encode())
